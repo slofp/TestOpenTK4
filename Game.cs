@@ -48,10 +48,26 @@ namespace TestOpenTK {
 			// 頂点バッファオブジェクトはBufferTarget.ArrayBufferとなる
 			GL.BindBuffer(BufferTarget.ArrayBuffer, VertexBufferObject);
 
+			// GPUへのmalloc的な？(BindBufferは単純な変数宣言に近い？)
+			// とりあえず頂点データをバッファーに転送する作業っぽい
+			// バッファタイプ -> データの大きさ(bytes) -> データ -> データをどのように管理するか(*1)
+			// *1:
+			// StaticDraw: データを全く変化しない。ただ、もしかしたら変更する可能性がある。
+			// DynamicDraw: データが変わる可能性が高い。
+			// StreamDraw: データがリアルタイムで変更される。
+			GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices, BufferUsageHint.StaticDraw);
 
+			// <補足>
+			// メモリは(プログラムが終了すれば)自動開放する
+			// ただ、手動で開放したい場合は以下のようにする
+			// GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+			// GL.DeleteBuffer(VertexBufferObject);
+
+			// 0にバインドすると基本nullになる。
+			// バインドせずにバッファーを変更してはならない。
 		}
 
-
+		// レンダーする作業
 		protected override void OnRenderFrame(FrameEventArgs args) {
 			base.OnRenderFrame(args);
 
@@ -77,6 +93,7 @@ namespace TestOpenTK {
 			GL.Viewport(0, 0, e.Width, e.Height);
 		}
 
+		// 様々な入力を受け取り、変数やら(ゲーム自体)を変更する作業
 		protected override void OnUpdateFrame(FrameEventArgs args) {
 			base.OnUpdateFrame(args);
 
