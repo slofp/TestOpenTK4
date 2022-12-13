@@ -24,6 +24,11 @@ namespace TestOpenTK {
 		// 頂点バッファオブジェクトのGPU用ポインタ？ID？
 		int VertexBufferObject;
 
+		// シェーダーデータ
+		Shader shader;
+
+		// 頂点配列のポインタ？
+		int VertexArrayObject;
 
 		public Game(int width, int height, string title)
 		: base(GameWindowSettings.Default, new NativeWindowSettings {
@@ -36,12 +41,21 @@ namespace TestOpenTK {
 		protected override void OnLoad() {
 			base.OnLoad();
 
+			shader = new Shader("shader.vert", "shader.flag");
+
 			// windowの色
 			GL.ClearColor(0.2f, 0.2f, 0.2f, 1f);
 
 
 			// 頂点バッファオブジェクトを生成
 			VertexBufferObject = GL.GenBuffer();
+
+			// ここから↓
+
+			// こいつを導入するだけで格段に楽になるらしい
+			// 頂点配列オブジェクトの生成 -> バインド
+			VertexArrayObject = GL.GenVertexArray();
+			GL.BindVertexArray(VertexArrayObject);
 
 
 			// バインド
@@ -65,6 +79,32 @@ namespace TestOpenTK {
 
 			// 0にバインドすると基本nullになる。
 			// バインドせずにバッファーを変更してはならない。
+
+			// 1, シェーダーのlocate = 0と指定した通りの設定？どの頂点属性を設定したいか
+			// 2, 頂点属性の大きさ、今回はvec3なので3
+			// 3, データ型の指定
+			// 4, データを正規化するか(整数型のときにtrueにすると、0またはsignedで-1、floatに変換できたら1になる)
+			// 5, ストライド、連続する頂点属性の間のスペースのこと。
+			//    今回の位置データは float のちょうど 3 倍の大きさで離れているので
+			//    その値をストライドとして指定。
+			//    ※ 配列が密に詰まっている（次の頂点属性値の間にスペースがない）ことがわかっているので、
+			//    OpenGLがストライドを決定するようにストライドを0に指定することもできた
+			//    (これは値が密に詰まっているときのみ機能する)。
+			//    頂点属性が増えるたびに各頂点属性の間隔を注意深く定義しなければならない。
+			// 6, 位置データがどこから始まるかのオフセット
+			GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
+			GL.EnableVertexAttribArray(0);
+
+
+			// ↑ここまでの動作をすれば基本的に描画される
+			// データが変更されない限りはロード時に行ったほうが良い?
+		}
+
+		protected override void OnUnload() {
+			base.OnUnload();
+
+			// シェーダーの開放を忘れずに
+			shader.Dispose();
 		}
 
 		// レンダーする作業
@@ -75,6 +115,11 @@ namespace TestOpenTK {
 			// windowの色をクリアする
 			// ※レンダリング時に最初に実行しないといけない
 			GL.Clear(ClearBufferMask.ColorBufferBit);
+
+			//GL.UseProgram();
+			shader.Use();
+			GL.BindVertexArray(VertexArrayObject);
+			GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
 
 			// ダブルバッファのスワップ関数
 			// レンダーバッファ <-> 描画バッファ

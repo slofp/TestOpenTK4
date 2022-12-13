@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "TestOpenTK": {
+      "commandName": "Project",
+      "workingDirectory": "E:\\Developfiles\\TestOpenTK"
+    }
+  }
+}
