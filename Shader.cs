@@ -78,6 +78,8 @@ namespace TestOpenTK {
 			GL.UseProgram(Handle);
 		}
 
+		public int GetAttribLocation(string attribName) => GL.GetAttribLocation(Handle, attribName);
+
 		// Dispose処理
 
 		private bool disposedValue = false;

@@ -30,6 +30,8 @@ namespace TestOpenTK {
 		// 頂点配列のポインタ？
 		int VertexArrayObject;
 
+		Square square;
+
 		public Game(int width, int height, string title)
 		: base(GameWindowSettings.Default, new NativeWindowSettings {
 			Size = new Vector2i(width, height),
@@ -46,6 +48,12 @@ namespace TestOpenTK {
 			// windowの色
 			GL.ClearColor(0.2f, 0.2f, 0.2f, 1f);
 
+
+			square = new(shader);
+
+			return;
+
+			// ここから下はメモのために残しておく
 
 			// 頂点バッファオブジェクトを生成
 			VertexBufferObject = GL.GenBuffer();
@@ -117,9 +125,10 @@ namespace TestOpenTK {
 			GL.Clear(ClearBufferMask.ColorBufferBit);
 
 			//GL.UseProgram();
-			shader.Use();
-			GL.BindVertexArray(VertexArrayObject);
-			GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
+			//shader.Use();
+			//GL.BindVertexArray(VertexArrayObject);
+			//GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
+			square.Draw();
 
 			// ダブルバッファのスワップ関数
 			// レンダーバッファ <-> 描画バッファ
