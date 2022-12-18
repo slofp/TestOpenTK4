@@ -21,6 +21,12 @@ namespace TestOpenTK {
 			0.0f,  0.5f, 0.0f  // 頂点
 		};
 
+		float[] verticesWithColor = {
+			-0.5f, -0.5f, 0.0f, 1f, 0f, 0f,
+			0.5f, -0.5f, 0.0f, 0f, 1f, 0f,
+			0.0f,  0.5f, 0.0f, 0f, 0f, 1f
+		};
+
 		// 頂点バッファオブジェクトのGPU用ポインタ？ID？
 		int VertexBufferObject;
 
@@ -30,7 +36,7 @@ namespace TestOpenTK {
 		// 頂点配列のポインタ？
 		int VertexArrayObject;
 
-		Square square;
+		//Square square;
 
 		public Game(int width, int height, string title)
 		: base(GameWindowSettings.Default, new NativeWindowSettings {
@@ -49,9 +55,9 @@ namespace TestOpenTK {
 			GL.ClearColor(0.2f, 0.2f, 0.2f, 1f);
 
 
-			square = new(shader);
+			//square = new(shader);
 
-			return;
+			//return;
 
 			// ここから下はメモのために残しておく
 
@@ -77,7 +83,7 @@ namespace TestOpenTK {
 			// StaticDraw: データを全く変化しない。ただ、もしかしたら変更する可能性がある。
 			// DynamicDraw: データが変わる可能性が高い。
 			// StreamDraw: データがリアルタイムで変更される。
-			GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices, BufferUsageHint.StaticDraw);
+			GL.BufferData(BufferTarget.ArrayBuffer, verticesWithColor.Length * sizeof(float), verticesWithColor, BufferUsageHint.StaticDraw);
 
 			// <補足>
 			// メモリは(プログラムが終了すれば)自動開放する
@@ -100,8 +106,12 @@ namespace TestOpenTK {
 			//    (これは値が密に詰まっているときのみ機能する)。
 			//    頂点属性が増えるたびに各頂点属性の間隔を注意深く定義しなければならない。
 			// 6, 位置データがどこから始まるかのオフセット
-			GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
+			GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 0);
 			GL.EnableVertexAttribArray(0);
+
+			// シェーダー色指定layout
+			GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 3 * sizeof(float));
+			GL.EnableVertexAttribArray(1);
 
 
 			// ↑ここまでの動作をすれば基本的に描画される
@@ -125,10 +135,10 @@ namespace TestOpenTK {
 			GL.Clear(ClearBufferMask.ColorBufferBit);
 
 			//GL.UseProgram();
-			//shader.Use();
-			//GL.BindVertexArray(VertexArrayObject);
-			//GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
-			square.Draw();
+			shader.Use();
+			GL.BindVertexArray(VertexArrayObject);
+			GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
+			//square.Draw();
 
 			// ダブルバッファのスワップ関数
 			// レンダーバッファ <-> 描画バッファ
