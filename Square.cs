@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace TestOpenTK {
 
-	internal class Square {
+	internal class Square : IDrawable {
 
 		float[] vertices = new float[4 * 3] {
 			0.5f, 0.5f, 0f,
@@ -29,6 +29,9 @@ namespace TestOpenTK {
 
 		Shader shader;
 
+		/*
+			各関数などの説明はTriangleに書かれてます
+		 */
 		internal Square(Shader shader) {
 			this.shader = shader;
 
@@ -52,7 +55,7 @@ namespace TestOpenTK {
 			GL.BufferData(BufferTarget.ElementArrayBuffer, indices.Length * sizeof(uint), indices, BufferUsageHint.StaticDraw);
 		}
 
-		internal void Draw() {
+		public void Draw() {
 			shader.Use();
 			GL.BindVertexArray(VertexArrayObject);
 			GL.DrawElements(PrimitiveType.Triangles, indices.Length, DrawElementsType.UnsignedInt, 0);
